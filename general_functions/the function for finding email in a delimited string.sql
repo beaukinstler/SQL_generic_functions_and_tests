@@ -1,11 +1,13 @@
 USE [Sandbox]
 GO
 
+
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
 
 -- =============================================
 -- Author:		Beau Kinstler
@@ -26,26 +28,27 @@ AS
 BEGIN
 	declare @temp as varchar(max) = ''
 	declare @result as varchar(max) = ''
-    Declare @email_chars as varchar(50) = '[@,\.]'
+	Declare @email_chars as varchar(50) = '[a-z,A-Z,0-9,_,-]@%[a-z,A-Z,0-9,_,-]%.[a-z,A-Z]'
 
 	-- loop we've parsed all but the last column, unless there's only one
 	-- which will be parsed
-    While PatIndex('%'+ @delim +'%', @safe_string) > 0
+	While PatIndex('%'+ @delim +'%', @safe_string) > 0
 	  BEGIN
-        set @temp = left(@safe_string,PatIndex('%'+ @delim +'%', @safe_string) -1 )
+		set @temp = left(@safe_string,PatIndex('%'+ @delim +'%', @safe_string) -1 )
 		set @safe_string = substring(@safe_string,PatIndex('%'+ @delim +'%', @safe_string) + 1,100)
 		if PatIndex('%'+ @email_chars +'%', @temp) > 0
-			select @result = LTRIM(RTRIM(@result + ', ' + @temp)) 
-	  END
+			select @result = LTRIM(RTRIM(@result + ', ' + @temp))
+	END
 
 	-- one more pass to check the last column for an email
-	set @temp = left(@safe_string,PatIndex('%'+ @delim +'%', @safe_string) -1 )
-	if PatIndex('%'+ @email_chars +'%', @temp) > 0
-			select @result = LTRIM(RTRIM(@result + ', ' + @temp))
+	--set @temp = left(@safe_string,PatIndex('%'+ @delim +'%', @safe_string) -1 )
+	if PatIndex('%'+ @email_chars +'%', @safe_string) > 0
+			select @result = LTRIM(RTRIM(@result + ', ' + @safe_string))
 
-    Return LTRIM(RTRIM(stuff(@result, CHARINDEX(', ',@result), LEN(', '), '')))
+	Return LTRIM(RTRIM(stuff(@result, CHARINDEX(', ',@result), LEN(', '), '')))
 
 END
+
 GO
 
 
