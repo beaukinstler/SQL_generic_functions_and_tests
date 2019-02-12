@@ -7,7 +7,7 @@ GO
  *  If they return a table, it shows that they havn'te returned the proper value, but shows 
  *  the result, and what was expected.
 */
-declare @debug as bit = 1 -- set to 1 to see all tests, not just failing ones
+declare @debug as bit = 0 -- set to 1 to see all tests, not just failing ones
 
 declare @result as varchar(max)
 declare @param as varchar(max)
@@ -62,7 +62,7 @@ else
 set @delim = ','
 set @param = @delim + @delim + 'first' + @delim + '5555555555' + @delim + 'last'
 		+ ',first@.com,fdslk@sdlfkjas.com,4441114444,'
-set @exp_result = '(555)555-5555, (444)111-4444'
+set @exp_result = NULL
 SELECT @result= [dbo].[fn_get_zip_from_string] (@param, @delim)
 if isnull(@result,'') <> isnull(@exp_result,'')
     select @result as  'result', @exp_result as 'expected', '** FAIL **' as result, @param as parameter;
