@@ -17,7 +17,7 @@ declare @debug as bit = 0
 
 -- phone will other numbers
 set @delim = ','
-set @param = '9023923 10913082'+ @delim + '+14445551234' + @delim + '555.555.5555' + @delim + 'last' + '444444019203921 9023923 10913082'
+set @param = '9023923 10913082'+ @delim + '+1 (444)555-1234' + @delim + '555.555.5555' + @delim + 'last' + '444444019203921 9023923 10913082'
 		+ @delim + '456 elm st.' + @delim + 'MN' + @delim + '55555-1234'
 set @exp_result = '(444)555-1234, (555)555-5555'
 SELECT @result= [dbo].[fn_get_phone_from_string] (@param, @delim)
