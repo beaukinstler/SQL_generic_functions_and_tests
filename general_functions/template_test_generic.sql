@@ -27,7 +27,7 @@ declare @exp_result as varchar(max)
 set @param = 1
 set @exp_result = 1
 SELECT @result = @param
-if @result <> @exp_result
+if isnull(@result,'') <> isnull(@exp_result,'')
     select @result as  'result', @exp_result as 'expected', '** FAIL **' as result, @param as parameter;
 else
     if @debug = 1
@@ -39,6 +39,16 @@ set @param = 2
 set @exp_result = 1
 SELECT @result = @param
 if @result <> @exp_result
+    select @result as  'result', @exp_result as 'expected', '** FAIL **' as result, @param as parameter;
+else
+    if @debug = 1
+        select @result as  'result', @exp_result as 'expected', 'pass' as result, @param as parameter;
+
+-- test 3
+set @param = 1
+set @exp_result = NULL
+SELECT @result = @param
+if isnull(@result,'') <> isnull(@exp_result,'')
     select @result as  'result', @exp_result as 'expected', '** FAIL **' as result, @param as parameter;
 else
     if @debug = 1
