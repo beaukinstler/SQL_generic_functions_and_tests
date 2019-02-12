@@ -1,12 +1,14 @@
 USE [Sandbox]
 GO
 
-
+/****** Object:  UserDefinedFunction [dbo].[fn_get_phone_from_string]    Script Date: 2/12/2019 12:40:07 PM ******/
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
+
+
 
 
 
@@ -21,7 +23,7 @@ GO
 --				Expects that the phone number isn't deimited with spaces, if 
 --				the text is also delimted with spaces.
 -- =============================================
-CREATE FUNCTION [dbo].[fn_get_phone_from_string] 
+ALTER FUNCTION [dbo].[fn_get_phone_from_string] 
 (
 	-- Add the parameters for the function here
 	@safe_string varchar(max),
@@ -39,19 +41,14 @@ BEGIN
     While PatIndex('%'+ @delim +'%', @safe_string) > 0
 	  BEGIN
         set @temp = left(@safe_string,PatIndex('%'+ @delim +'%', @safe_string) -1 )
-        set @temp = REPLACE(@temp,' ','')
-        set @temp = REPLACE(@temp,'(','')
-        set @temp = REPLACE(@temp,')','')
-        set @temp = REPLACE(@temp,'.','')
-        set @temp = REPLACE(@temp,'-','')
+        set @temp = dbo.fn_get_phone_number_nums_only(@temp)
         set @safe_string = substring(@safe_string,PatIndex('%'+ @delim +'%', @safe_string) + 1,100)
         if PatIndex('%'+ @phone_chars +'%', @temp) > 0 and len(@temp) >= 10 and @temp not like '%_____-____%'
 			set @result = LTRIM(RTRIM(@result + ', ' + dbo.fn_phone_number_formatter(@temp)))
     END
 
     -- one more pass to check the last column for an phone
-    --set @temp = left(@safe_string,PatIndex('%'+ @delim +'%', @safe_string) -1 )
-    if PatIndex('%'+ @phone_chars +'%', @safe_string) > 0 and len(@safe_string) >= 10 and @safe_string not like '%_____-____%'
+    if PatIndex(@phone_chars, dbo.fn_get_phone_number_nums_only(@safe_string)) > 0 and len(@safe_string) >= 10 and @safe_string not like '%_____-____%'
 			set @result = LTRIM(RTRIM(@result + ', ' + dbo.fn_phone_number_formatter(@safe_string)))
 
     Return LTRIM(RTRIM(stuff(@result, CHARINDEX(', ',@result), LEN(', '), '')))
